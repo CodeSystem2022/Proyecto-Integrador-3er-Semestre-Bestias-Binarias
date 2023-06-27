@@ -6,8 +6,7 @@ from tkinter import Label
 def main():
     root = tk.Tk()
     root.title('Catalogo de Productos - Bestias Binarias')
-    root.iconbitmap('img/bestiasBinarias.ico')
-    #root.resizable(0,0)
+    root.iconbitmap('img/bestiasBinarias.ico')    
     barra_menu(root)
     
     imagen = ImageTk.PhotoImage(Image.open('../catalogo-productos/img/bestiasBinarias.gif'))
