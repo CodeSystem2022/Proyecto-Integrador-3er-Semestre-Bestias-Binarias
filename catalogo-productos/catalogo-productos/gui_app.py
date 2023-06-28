@@ -45,10 +45,10 @@ class Frame(tk.Frame):
         self.pack()
         self.id_producto = None
         self.tabla_productos()
-
+        
+        # Agregar el botón para cambiar el fondo
         img = PhotoImage(file='img/config.png')
         img = img.subsample(15)
-        # Agregar el botón para cambiar el fondo
         self.boton_cambiar_fondo = tk.Button(self,text='Color fondo' ,image=img)
         self.boton_cambiar_fondo.config(width=40, font=('Arial', 12, 'bold'),
                                         fg='#2C2C2E', relief= 'raised',
@@ -75,6 +75,11 @@ class Frame(tk.Frame):
         self.titulo_tabla = tk.Label(self, text='Lista de Productos',width=20, font=('Comic Sans MS', 14, 'bold'),
                                 fg='#2C2C2E', bg='#ffffff')
         self.titulo_tabla.grid(row=3, column=0, padx=10, pady=10, columnspan=4)
+
+    def cambiar_fondo(self):
+        color_fondo = tk.colorchooser.askcolor(title="Seleccionar color de fondo")[1]
+        self.config(bg=color_fondo)
+        self.master.config(bg=color_fondo)
         
     def buscar_datos(self):
         try:
