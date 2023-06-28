@@ -76,7 +76,41 @@ class Frame(tk.Frame):
                                 fg='#2C2C2E', bg='#ffffff')
         self.titulo_tabla.grid(row=3, column=0, padx=10, pady=10, columnspan=4)
         
+    def buscar_datos(self):
+        try:
+            # Crear un objeto ttk.Treeview en la ventana emergente (self.search)
+            # con tres columnas: 'Nombre', 'precio' y 'Categoria'
+            self.ts = ttk.Treeview(self.search, columns=('Nombre', 'Precio', 'Categoria'))
+            self.ts.grid(row=3, column=0, columnspan=4, sticky='nsew')
 
+            # Configurar los encabezados del ttk.Treeview con las etiquetas correspondientes
+            self.ts.heading('#0', text='ID')
+            self.ts.heading('#1', text='NOMBRE')
+            self.ts.heading('#2', text='PRECIO')
+            self.ts.heading('#3', text='CATEGORIA')
+
+            # Inicializar un contador para llevar la cuenta de los resultados encontrados
+            contador = 0
+            for p in self.lista_productos:
+                # Verificar si el texto de búsqueda (self.mi_busqueda.get()) está presente en el nombre del producto (p[1])
+                if self.mi_busqueda.get() in p[1]:
+                    # Insertar una nueva fila en el ttk.Treeview con los valores del producto
+                    self.ts.insert('', 0, text=p[0], values=(p[1], p[2], p[3]))
+                    contador += 1
+
+            # Actualizar el mensaje de resultado según el contador
+            if contador == 0:
+                self.mensaje1['text'] = 'No se encontraron resultados'
+            elif contador == 1:
+                self.mensaje1['text'] = 'Se encontró ' + str(contador) + ' resultado'
+            elif contador > 1:
+                self.mensaje1['text'] = 'Se encontraron ' + str(contador) + ' resultados'
+
+        except:
+            # Mostrar un mensaje de error en caso de excepción
+            title = 'Búsqueda de datos'
+            message = 'Ocurrió un error'
+            messagebox.showerror(title, message)
     def tabla_productos(self):
         
         self.mi_categoria = tk.StringVar()
