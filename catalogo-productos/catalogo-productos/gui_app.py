@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk, messagebox
-
+from PIL import ImageTk, Image
 
 def barra_menu(root):
     barra_menu = tk.Menu(root)
@@ -34,7 +34,36 @@ def barra_menu(root):
     acerca.add_command(label='Desarrolladores')
     acerca.add_command(label='Login')
 
+def desarolladores():
 
+    ventana = Toplevel()
+    ventana.config(bg="sky blue")
+    ventana.title('Desarrolladores')
+    ventana.iconbitmap('../catalogo-productos/img/bestiasBinarias.ico')
+
+    lbl = Label(ventana, text="***** BESTIAS BINARIAS ***** ", font=("Arial Bold", 20))
+    lbl.config(bg="sky blue")
+    lbl1 = Label(ventana, text= "Daiana Escudero - Daniel Guerrero", font=("Arial Bold", 15))
+    lbl1.config(bg="sky blue")
+    lbl2 = Label(ventana, text="Mariana Cervantes - Gabriel Romero", font=("Helvetica Bold", 15))
+    lbl2.config(bg="sky blue")
+    lbl3 = Label(ventana, text="Fernando Silva - Nahuel Tapia", font=("Helvetica Bold", 15))
+    lbl3.config(bg="sky blue")
+    lbl4 = Label(ventana, text="Florencia Ortega - Albano Calamara", font=("Helvetica Bold", 15))
+    lbl4.config(bg="sky blue")
+    lbl5 = Label(ventana, text="Nicolas Muros - David Mato", font=("Helvetica Bold", 15))
+    lbl5.config(bg="sky blue")
+    imagen = ImageTk.PhotoImage(Image.open('../catalogo-productos/img/LOGO_BB3.png'))
+    label = Label(ventana, image = imagen)
+    label.config(bg="sky blue")
+    lbl.pack()
+    lbl1.pack()
+    lbl2.pack()
+    lbl3.pack()
+    lbl4.pack()
+    lbl5.pack()
+    label.pack()
+    ventana.mainloop()
 
 class Frame(tk.Frame):
 
