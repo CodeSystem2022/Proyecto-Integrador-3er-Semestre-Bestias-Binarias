@@ -249,3 +249,66 @@ class Frame(tk.Frame):
                                 fg='#2C2C2E', bg='#ff8097',
                                 cursor='hand2', activebackground='#E15370')
         self.boton_eliminar.grid(row=5, column=1, padx=10, pady=10)
+    def ventana_editar(self):
+        try:
+            self.id_producto = self.tabla.item(self.tabla.selection())['text']
+            self.mi_nombre.set(self.tabla.item(self.tabla.selection())['values'][0])
+            self.mi_precio.set(self.tabla.item(self.tabla.selection())['values'][1])
+            self.mi_categoria.set(self.tabla.item(self.tabla.selection())['values'][2])
+            # Creamos una nueva ventana que se abrira al presionar el boton editar
+            self.ventana = Toplevel()
+            self.ventana.title("Editar Producto" )
+            self.ventana.iconbitmap('./img/bestiasbinarias.ico')
+            self.ventana.geometry("500x150")
+
+            # Nombre nuevo del producto a editar, se crea un label y un entry para ingresar el nuevo nombre
+            self.nuevo_nombre = tk.Label(self.ventana, text="Nombre Nuevo: ",width=20, font=('Arial', 12, 'bold'))
+            self.nuevo_nombre.grid(row=1, column=0)
+            Entry(self.ventana, textvariable=self.mi_nombre,width=20, font=('Arial', 12, 'bold'), fg='#2C2C2E').grid(
+                row=1, column=1, sticky='wsen', columnspan=3)
+            # Precio nuevo del producto a editar, se crea un label y un entry para ingresar el nuevo precio
+            self.nuevo_precio = tk.Label(self.ventana, text="Precio Nuevo: ",width=20, font=('Arial', 12, 'bold'))
+            self.nuevo_precio.grid(row=2, column=0)
+            Entry(self.ventana, textvariable=self.mi_precio, width=20, font=('Arial', 12, 'bold'), fg='#2C2C2E' ).grid(
+                row=2, column=1, sticky='wsen', columnspan=3)
+
+            # Categoria nueva del producto a editar, se crea un label y un combobox para ingresar la nueva categoria
+            Label(self.ventana, text="Categoria Nueva: ",width=20, font=('Arial', 12, 'bold'), fg='#2C2C2E').grid(row=3, column=0)
+            ttk.Combobox(self.ventana, textvariable=self.mi_categoria, state='normal',width=20, font=('Arial', 12, 'bold'),
+                         values=self.combobox_categoria['values']).grid(
+                row=3, column=1, sticky='wsen', columnspan=3)
+            # Creamos el boton para actualizar los valores ingresados en la ventana de editar
+            B_editar = tk.Button(self.ventana, text='Actualizar', command=self.actualizar_datos)
+            B_editar.config(width=10, font=('Arial', 12, 'bold'), fg='#e9e9f0', bg='#1528CC',
+                            cursor='hand2', activebackground='#35B6DF')
+            B_editar.grid(row=4, column=3, padx=10, pady=10)
+            # Creamos el boton para cancelar y llamamos a la funcion cancelar_ventana
+            B_cancelar = tk.Button(self.ventana, text='Cancelar', command=self.ventana.destroy)
+            B_cancelar.config(width=10, font=('Arial', 12, 'bold'), fg='#e9e9f0', bg='#DD1D17',
+                              cursor='hand2', activebackground='#35B6DF')
+            B_cancelar.grid(row=4, column=2, padx=10, pady=10)
+
+        except:
+            titulo = 'Edición de datos'
+            mensaje = 'No has seleccionado ningún registro'
+            messagebox.showerror(titulo, mensaje)
+
+    #Funcion para actualizar los datos
+    def actualizar_datos(self):
+        #Leemos el contenido de la tabla
+        producto = Producto(
+            self.mi_nombre.get(),
+            self.mi_precio.get(),
+            self.mi_categoria.get(),
+        )
+        try:
+            #Llamos a la funcion editar que se encuentra en producto_dao y contiene el query necesario
+            editar(producto, self.id_producto)
+            self.tabla_productos()
+            #Una vez actualizados los datos se cierra la ventana al dar clic en el boton Actualizar
+            self.ventana.destroy()
+        except:
+            titulo = 'Error al actualizar'
+            mensaje = 'No se pudo actualizar el registro'
+            messagebox.showerror(titulo, mensaje)
+        self.mensaje['text'] = '¡¡¡ Producto:  {}  actualizado satisfactoriamente !!!'.format(self.mi_nombre.get())
