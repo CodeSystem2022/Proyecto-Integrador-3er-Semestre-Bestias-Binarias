@@ -116,6 +116,77 @@ class Frame(tk.Frame):
             title = 'Búsqueda de datos'
             message = 'Ocurrió un error'
             messagebox.showerror(title, message)
+
+     def abrir_ventana_nuevo(self):
+
+        try:
+            self.ventana_nuevo = tk.Toplevel()
+            self.ventana_nuevo.title("Nuevo Producto")
+
+            self.ventana_nuevo.geometry("800x200")
+            self.ventana_nuevo.iconbitmap('./img/bestiasbinarias.ico')
+
+            self.nombre = tk.Label(self.ventana_nuevo, text="Ingrese nombre de Producto:")
+            self.nombre.config(font=('Arial', 12, 'bold'))
+            self.nombre.grid(row=0, column=0)
+
+            self.mi_nombre = tk.StringVar()
+            self.entry_nombre = tk.Entry(self.ventana_nuevo, textvariable=self.mi_nombre)
+            self.entry_nombre.config(width=50, font=('Arial', 12))
+            self.entry_nombre.grid(row=0, column=1, padx=10, pady=10, columnspan=2)
+
+            self.precio = tk.Label(self.ventana_nuevo, text="Ingrese el Precio:")
+            self.precio.config(font=('Arial', 12, 'bold'))
+            self.precio.grid(row=1, column=0)
+
+            self.mi_precio = tk.StringVar()
+            self.entry_precio = tk.Entry(self.ventana_nuevo, textvariable=self.mi_precio)
+            self.entry_precio.config(width=50, font=('Arial', 12))
+            self.entry_precio.grid(row=1, column=1, padx=10, pady=10, columnspan=2)
+
+            self.mi_categoria = tk.StringVar()
+            self.categoria = tk.Label(self.ventana_nuevo, text="Ingrese la Categoría:")
+            self.categoria.config(font=('Arial', 12, 'bold'))
+            self.categoria.grid(row=2, column=0)
+
+            self.combobox_categoria1 = ttk.Combobox(self.ventana_nuevo, textvariable=self.mi_categoria, state='normal',
+                                                    values=self.combobox_categoria['values'])
+            self.combobox_categoria1.config(width=47, font=('Arial', 12))
+            self.combobox_categoria1.grid(row=2, column=1, padx=10, pady=10, columnspan=2)
+
+            self.B_guardar = tk.Button(self.ventana_nuevo, text="Guardar datos", command=self.guardar_datos)
+            self.B_guardar.grid(row=4, column=1)
+            self.B_guardar.config(width=20, font=('Arial', 12, 'bold'), fg='#e9e9f0', bg='#1528CC', cursor='hand2',
+                                  activebackground='#35B6DF')
+
+            self.B_cerrar = tk.Button(self.ventana_nuevo, text="Cancelar", command=self.ventana_nuevo.destroy)
+            self.B_cerrar.grid(row=4, column=2)
+            self.B_cerrar.config(width=20, font=('Arial', 12, 'bold'), fg='#e9e9f0', bg='#DD1D17', cursor='hand2',
+                                 activebackground='#35B6DF')
+        except:
+            titulo = 'Agregar datos'
+            mensaje = 'No has colocado ningún producto'
+            messagebox.showerror(titulo, mensaje)
+
+# Creamos la función para guardar los datos
+    def guardar_datos(self):
+        producto = Producto(
+            self.mi_nombre.get(),
+            self.mi_precio.get(),
+            self.mi_categoria.get(),
+        )
+        if self.id_producto is None:
+            guardar(producto)
+            # Agrega la nueva opción a los valores del combobox
+            self.combobox_categoria['values'] = tuple(
+                list(self.combobox_categoria['values']) + [self.mi_categoria.get()]
+            )
+        else:
+            pass
+        self.tabla_productos()
+        self.ventana_nuevo.destroy()
+        self.mensaje['text'] = '¡¡¡ Producto:  {}  agregado satisfactoriamente !!!'.format(self.mi_nombre.get())
+
     def tabla_productos(self):
         
         self.mi_categoria = tk.StringVar()
