@@ -94,22 +94,57 @@ class Frame(tk.Frame):
                                 fg='#2C2C2E', bg='#3CF90D',
                                 cursor='hand2', activebackground='#35BD6F')
         self.boton_nuevo.grid(row=1, column=0, padx=10, pady=10)
-
-        self.boton_buscar = tk.Button(self, text='Buscar')
+    
+        # Agregamos boton para buscar dentro de la tabla
+        self.boton_buscar = tk.Button(self, text='Buscar', command=self.ventana_buscar)
         self.boton_buscar.config(width=20, font=('Arial', 12, 'bold'),
-                                 fg='#2C2C2E', bg='#66aa11',
+                                 fg='#2C2C2E', bg='#8F00FF',
                                  cursor='hand2', activebackground='#35BD6F')
         self.boton_buscar.grid(row=1, column=1, padx=10, pady=10)
-
-        self.titulo_tabla = tk.Label(self, text='Lista de Productos',width=20, font=('Comic Sans MS', 14, 'bold'),
+        # Agregamos label para mostrar titulo de la tabla
+        self.titulo_tabla = tk.Label(self, text='Lista de Productos',width=20, font=('Comic Sans MS', 16, 'bold'),
                                 fg='#2C2C2E', bg='#ffffff')
         self.titulo_tabla.grid(row=3, column=0, padx=10, pady=10, columnspan=4)
+
+        # Agregamos label para mostrar mensajes
+        self.mensaje = tk.Label(self, text='',width=50, font=('Comic Sans MS', 12, 'bold'),fg='#000000', bg='#87CEEB')
+        self.mensaje.grid(row=2, column=0, padx=10, pady=10, columnspan=4)
+
 
     def cambiar_fondo(self):
         color_fondo = tk.colorchooser.askcolor(title="Seleccionar color de fondo")[1]
         self.config(bg=color_fondo)
         self.master.config(bg=color_fondo)
-        
+    
+     def ventana_buscar(self):
+        try:
+            self.search = Toplevel()
+            self.search.title("Buscar Producto")
+
+            Label(self.search, text="Buscar por Nombre: ").grid(row=0, column=0)
+
+            self.mi_busqueda = tk.StringVar()
+            Entry(self.search, textvariable=self.mi_busqueda).grid(
+                row=0, column=1)
+            self.mensaje1 = tk.Label(self.search, text='', width=50, font=('Comic Sans MS', 12, 'bold'),fg='#000000', bg='#87CEEB')
+            self.mensaje1.grid(row=1, column=0, padx=10, pady=10, columnspan=4)
+
+            search_button = tk.Button(self.search, text='Buscar', command=self.buscar_datos)
+            search_button.config(width=10, font=('Arial', 12, 'bold'), fg='#ffffff', bg='#5a0173',
+                                 cursor='hand2', activebackground='#35B6DF')
+            search_button.grid(row=2, column=0, padx=10, pady=10)
+
+            B_cancelar = tk.Button(self.search, text='Cancelar', command= self.search.destroy)
+            B_cancelar.config(width=10, font=('Arial', 12, 'bold'), fg='#e9e9f0', bg='#DD1D17',
+                              cursor='hand2', activebackground='#35B6DF')
+            B_cancelar.grid(row=2, column=1, padx=10, pady=10)
+        except:
+            title = 'Busqueda de datos'
+            message = 'Ocurrió un error'
+            messagebox.showerror(title, message)
+
+
+    
     def buscar_datos(self):
         try:
             # Crear un objeto ttk.Treeview en la ventana emergente (self.search)
