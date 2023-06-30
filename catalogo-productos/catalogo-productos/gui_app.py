@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import colorchooser
 from tkinter import ttk, messagebox
 from PIL import ImageTk, Image
+from producto_dao import *
 
 def barra_menu(root):
     barra_menu = tk.Menu(root)
@@ -9,15 +11,15 @@ def barra_menu(root):
 
     menu_inicio = tk.Menu(barra_menu, tearoff=0)
     barra_menu.add_cascade(label='Inicio', menu=menu_inicio)
-    menu_inicio.add_command(label='Crear Registro en DB')
-    menu_inicio.add_command(label='Eliminar Registro en DB')
+    menu_inicio.add_command(label='Crear Registro en DB', command=crear_tabla)
+    menu_inicio.add_command(label='Eliminar Registro en DB', command=borrar_tabla)
     menu_inicio.add_command(label='Salir', command=root.destroy)
 
     heramientas = tk.Menu(barra_menu, tearoff=0)
     barra_menu.add_cascade(label='Herramientas', menu=heramientas)
-    heramientas.add_command(label='Celulares')
-    heramientas.add_command(label='Notebooks')
-    heramientas.add_command(label='Tablets')
+    heramientas.add_command(label='Refrescar')
+    heramientas.add_command(label='Zoom')
+    heramientas.add_command(label='Imprimir')
 
     configuracion = tk.Menu(barra_menu, tearoff=0)
     barra_menu.add_cascade(label='Configuración', menu=configuracion)
@@ -31,8 +33,8 @@ def barra_menu(root):
 
     acerca = tk.Menu(barra_menu, tearoff=0)
     barra_menu.add_cascade(label='Acerca de', menu=acerca)
-    acerca.add_command(label='Desarrolladores')
-    acerca.add_command(label='Login')
+    acerca.add_command(label='Desarrolladores', command= desarolladores)
+    acerca.add_command(label='Versiones')
 
 def desarolladores():
 
@@ -69,32 +71,31 @@ class Frame(tk.Frame):
 
     def __init__(self, root=None):
         super().__init__(root)
-
+        # Inicializamos la ventana principal
         self.root = root
         self.pack()
         self.id_producto = None
         self.tabla_productos()
-        
-        # Agregar el botón para cambiar el fondo
+        # Agregamos imagen para boton de cambiar fondo
         img = PhotoImage(file='img/config.png')
         img = img.subsample(15)
-        self.boton_cambiar_fondo = tk.Button(self,text='Color fondo' ,image=img)
+        # Agregar el botón para cambiar el fondo
+        self.boton_cambiar_fondo = tk.Button(self,text='Color fondo' ,image=img, command= self.cambiar_fondo)
         self.boton_cambiar_fondo.config(width=40, font=('Arial', 12, 'bold'),
                                         fg='#2C2C2E', relief= 'raised',
                                         cursor='hand2', activebackground='#ffffff')
         self.boton_cambiar_fondo.place(x=775, y=5)
         self.boton_cambiar_fondo.image = img
-
+        #Inicializamos las variables como StringVar
         self.mi_nombre = tk.StringVar()
         self.mi_precio = tk.StringVar()
         self.mi_categoria = tk.StringVar()
-
-        self.boton_nuevo = tk.Button(self, text='Ingreso nuevo')
+        # Agregamos label para mostrar titulo de la tabla
+        self.boton_nuevo = tk.Button(self, text='Ingreso nuevo', command=self.abrir_ventana_nuevo)
         self.boton_nuevo.config(width=20, font=('Arial', 12, 'bold'),
                                 fg='#2C2C2E', bg='#3CF90D',
                                 cursor='hand2', activebackground='#35BD6F')
         self.boton_nuevo.grid(row=1, column=0, padx=10, pady=10)
-    
         # Agregamos boton para buscar dentro de la tabla
         self.boton_buscar = tk.Button(self, text='Buscar', command=self.ventana_buscar)
         self.boton_buscar.config(width=20, font=('Arial', 12, 'bold'),
@@ -116,7 +117,7 @@ class Frame(tk.Frame):
         self.config(bg=color_fondo)
         self.master.config(bg=color_fondo)
     
-     def ventana_buscar(self):
+    def ventana_buscar(self):
         try:
             self.search = Toplevel()
             self.search.title("Buscar Producto")
@@ -181,7 +182,7 @@ class Frame(tk.Frame):
             message = 'Ocurrió un error'
             messagebox.showerror(title, message)
 
-     def abrir_ventana_nuevo(self):
+    def abrir_ventana_nuevo(self):
 
         try:
             self.ventana_nuevo = tk.Toplevel()
@@ -253,9 +254,17 @@ class Frame(tk.Frame):
 
     def tabla_productos(self):
         
+        #Recuperar la lista de productos de la bd
+        self.lista_productos = listar()
+        self.lista_productos.reverse()
+
         self.mi_categoria = tk.StringVar()
         self.combobox_categoria = ttk.Combobox(self, textvariable=self.mi_categoria, state='readonly')
-  
+        # Obtener los valores únicos de la columna "categoria"
+        categoria = set([p[3] for p in self.lista_productos])
+
+        # Actualizar las opciones del ComboBox
+        self.combobox_categoria['values'] = tuple(categoria)
 
         self.tabla = ttk.Treeview(self, columns=('Nombre', 'precio', 'Categoria'))
         self.tabla.grid(row=4, column=0, columnspan=4, sticky='nsew')
@@ -270,20 +279,24 @@ class Frame(tk.Frame):
         self.tabla.heading('#2', text='PRECIO')
         self.tabla.heading('#3', text='CATEGORIA')
 
-  
+        # Iterar la lista de productos de la bd
+        for p in self.lista_productos:
+            self.tabla.insert('', 0, text=p[0], values=(p[1], p[2], p[3]))
+
         # Boton Editar
-        self.boton_editar = tk.Button(self, text='Editar')
+        self.boton_editar = tk.Button(self, text='Editar', command=self.ventana_editar)
         self.boton_editar.config(width=20, font=('Arial', 12, 'bold'),
-                                fg='#2C2C2E', bg='#77dd77',
-                                cursor='hand2', activebackground='#35BD6F')
+                                 fg='#2C2C2E', bg='#0000FF',
+                                 cursor='hand2', activebackground='#35BD6F')
         self.boton_editar.grid(row=5, column=0, padx=10, pady=10)
 
         # Boton Eliminar
-        self.boton_eliminar = tk.Button(self, text='Eliminar')
+        self.boton_eliminar = tk.Button(self, text='Eliminar', command=self.eliminar_datos)
         self.boton_eliminar.config(width=20, font=('Arial', 12, 'bold'),
-                                fg='#2C2C2E', bg='#ff8097',
-                                cursor='hand2', activebackground='#E15370')
+                                   fg='#2C2C2E', bg='#FF0000',
+                                   cursor='hand2', activebackground='#E15370')
         self.boton_eliminar.grid(row=5, column=1, padx=10, pady=10)
+        
     def ventana_editar(self):
         try:
             self.id_producto = self.tabla.item(self.tabla.selection())['text']
@@ -347,3 +360,16 @@ class Frame(tk.Frame):
             mensaje = 'No se pudo actualizar el registro'
             messagebox.showerror(titulo, mensaje)
         self.mensaje['text'] = '¡¡¡ Producto:  {}  actualizado satisfactoriamente !!!'.format(self.mi_nombre.get())
+    
+    def eliminar_datos(self):
+        try:
+            self.id_producto = self.tabla.item(self.tabla.selection())['text']
+            eliminar(self.id_producto)
+            reiniciar_id
+            self.tabla_productos()
+            self.id_producto = None
+        except:
+            titulo = 'Eliminar un registro'
+            mensaje = 'No ha seleccionado ningun registro'
+            messagebox.showerror(titulo, mensaje)
+        self.mensaje['text'] = '¡¡¡ Producto eliminado satisfactoriamente !!!'.format(self.mi_nombre.get()) 
